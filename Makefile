@@ -4,12 +4,12 @@ PYTHON ?= $(VENV)/bin/python3
 PIP ?= $(VENV)/bin/pip3
 
 TRAIN_DATA ?= data/dataset_train.csv
-DESCRIBE ?= src/describe.py
+DESCRIBE_TEST ?= test/describe_pandas.py
 
-.PHONY: all help venv install describe clean fclean re
+.PHONY: all help venv install describe_test clean fclean re
 
 # Run the first mandatory program.
-all: describe
+all: describe_test
 
 # Show available commands.
 help:
@@ -17,7 +17,7 @@ help:
 	@echo "  make all       - run the current mandatory workflow"
 	@echo "  make venv      - create the local Python virtual environment"
 	@echo "  make install   - install Python dependencies if requirements.txt exists"
-	@echo "  make describe  - display numerical statistics for the train dataset"
+	@echo "  make describe_test  - display numerical statistics for the train dataset"
 	@echo "  make clean     - remove Python cache files"
 	@echo "  make fclean    - clean and remove the virtual environment"
 	@echo "  make re        - rebuild the environment, then run all"
@@ -37,8 +37,8 @@ install: venv
 	fi
 
 # First mandatory program: dataset numerical summary.
-describe: venv
-	$(PYTHON) $(DESCRIBE) $(TRAIN_DATA)
+describe_test: venv
+	$(PYTHON) $(DESCRIBE_TEST) $(TRAIN_DATA)
 
 # Remove Python cache files.
 clean:
