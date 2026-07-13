@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import csv
-from os import read
 
 
 class Database:
