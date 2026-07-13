@@ -1,0 +1,12 @@
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Local environment
+.venv/
+venv/
+
+# Local test/output scratch files
+test/output_*
