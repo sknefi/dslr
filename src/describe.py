@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from typing import List, Dict
+from typing import List
 from math import sqrt
 from math import floor
 
@@ -62,9 +62,34 @@ def max(numeric_values: List[float]) -> float:
 
 def describe(database: Database) -> None:
     numeric_column_names: List[str] = database.numeric_columns()
-    features: Dict[List[float]] = dict()
+    features = []
 
-        
+    for column_name in numeric_column_names:
+        numeric_values = database.numeric_column(column_name)
+        sorted_numeric_values = sorted(numeric_values)
+        features.append({
+            "name": column_name,
+            "Count": count(numeric_values),
+            "Mean": mean(numeric_values),
+            "Std": std(numeric_values),
+            "Min": min(numeric_values),
+            "25%": q1(sorted_numeric_values),
+            "50%": median(sorted_numeric_values),
+            "75%": q3(sorted_numeric_values),
+            "Max": max(numeric_values),
+        })
+
+    stat_names = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
+    print(f"{'':<8}", end="")
+    for feature in features:
+        print(f"{feature['name']:>30}", end="")
+    print()
+
+    for stat_name in stat_names:
+        print(f"{stat_name:<8}", end="")
+        for feature in features:
+            print(f"{feature[stat_name]:>30.6f}", end="")
+        print()
 
 def main() -> None:
     if len(sys.argv) != 2:
