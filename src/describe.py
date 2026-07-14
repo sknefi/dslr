@@ -91,7 +91,7 @@ def describe(database: Database) -> None:
             print(f"{feature[stat_name]:>30.6f}", end="")
         print()
 
-def main() -> None:
+def main() -> int:
     if len(sys.argv) != 2:
         print(f"Usage: {sys.argv[0]} dataset.csv", file=sys.stderr)
         return 1
@@ -103,7 +103,8 @@ def main() -> None:
         return 1
 
     describe(database)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
