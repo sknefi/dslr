@@ -8,6 +8,9 @@ from math import floor
 from database import Database
 
 
+COLUMN_PADDING = 4
+
+
 def count(numeric_values: List[float]) -> float:
     return float(len(numeric_values)) # empty fields are already parsed
 
@@ -69,7 +72,7 @@ def label_width(labels: List[str]) -> int:
     for label in labels:
         if len(label) > width:
             width = len(label)
-    return width + 2
+    return width + COLUMN_PADDING
 
 def feature_width(feature, stat_names: List[str]) -> int:
     width: int = len(feature["name"])
@@ -77,7 +80,7 @@ def feature_width(feature, stat_names: List[str]) -> int:
         value_width = len(format_number(feature[stat_name]))
         if value_width > width:
             width = value_width
-    return width + 2
+    return width + COLUMN_PADDING
 
 
 def describe(database: Database) -> None:
