@@ -5,9 +5,10 @@ PIP ?= $(VENV)/bin/pip3
 
 TRAIN_DATA ?= data/dataset_train.csv
 DESCRIBE ?= src/describe.py
+HISTOGRAM ?= src/histogram.py
 DESCRIBE_TEST ?= test/describe_pandas.py
 
-.PHONY: all help venv install describe describe_test clean fclean re
+.PHONY: all help venv install describe histogram describe_test clean fclean re
 
 # Run the first mandatory program.
 all: describe
@@ -15,14 +16,15 @@ all: describe
 # Show available commands.
 help:
 	@echo "Available targets:"
-	@echo "  make all       - run the current mandatory workflow"
-	@echo "  make venv      - create the local Python virtual environment"
-	@echo "  make install   - install Python dependencies if requirements.txt exists"
-	@echo "  make describe  - run the current describe implementation"
-	@echo "  make describe_test  - run the pandas reference describe"
-	@echo "  make clean     - remove Python cache files"
-	@echo "  make fclean    - clean and remove the virtual environment"
-	@echo "  make re        - rebuild the environment, then run all"
+	@echo "  make all             - run the current mandatory workflow"
+	@echo "  make venv            - create the local Python virtual environment"
+	@echo "  make install         - install Python dependencies if requirements.txt exists"
+	@echo "  make describe        - run the current describe implementation"
+	@echo "  make histogram       - display one feature histogram"
+	@echo "  make describe_test   - run the pandas reference describe"
+	@echo "  make clean           - remove Python cache files"
+	@echo "  make fclean          - clean and remove the virtual environment"
+	@echo "  make re              - rebuild the environment, then run all"
 
 # Create the local Python virtual environment.
 venv: $(VENV)/bin/python3
@@ -41,6 +43,10 @@ install: venv
 # First mandatory program, built slowly.
 describe: venv
 	$(PYTHON) $(DESCRIBE) $(TRAIN_DATA)
+
+# Display one feature histogram.
+histogram: venv
+	$(PYTHON) $(HISTOGRAM) $(TRAIN_DATA)
 
 # Pandas reference output for comparison only.
 describe_test: venv
