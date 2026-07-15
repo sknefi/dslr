@@ -7,6 +7,7 @@ from math import floor
 
 from database import Database
 
+
 def count(numeric_values: List[float]) -> float:
     return float(len(numeric_values)) # empty fields are already parsed
 
@@ -60,6 +61,25 @@ def max(numeric_values: List[float]) -> float:
     return max_val
 
 
+def format_number(value: float) -> str:
+    return f"{value:.6f}"
+
+def label_width(labels: List[str]) -> int:
+    width: int = 0
+    for label in labels:
+        if len(label) > width:
+            width = len(label)
+    return width + 2
+
+def feature_width(feature, stat_names: List[str]) -> int:
+    width: int = len(feature["name"])
+    for stat_name in stat_names:
+        value_width = len(format_number(feature[stat_name]))
+        if value_width > width:
+            width = value_width
+    return width + 2
+
+
 def describe(database: Database) -> None:
     numeric_column_names: List[str] = database.numeric_columns()
     features = []
@@ -80,15 +100,20 @@ def describe(database: Database) -> None:
         })
 
     stat_names = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
-    print(f"{'':<8}", end="")
+    stat_label_width = label_width(stat_names)
+    feature_widths = []
     for feature in features:
-        print(f"{feature['name']:>30}", end="")
+        feature_widths.append(feature_width(feature, stat_names))
+
+    print(f"{'':<{stat_label_width}}", end="")
+    for i, feature in enumerate(features):
+        print(f"{feature['name']:>{feature_widths[i]}}", end="")
     print()
 
     for stat_name in stat_names:
-        print(f"{stat_name:<8}", end="")
-        for feature in features:
-            print(f"{feature[stat_name]:>30.6f}", end="")
+        print(f"{stat_name:<{stat_label_width}}", end="")
+        for i, feature in enumerate(features):
+            print(f"{format_number(feature[stat_name]):>{feature_widths[i]}}", end="")
         print()
 
 def main() -> int:
