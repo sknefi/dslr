@@ -8,8 +8,10 @@ DESCRIBE ?= src/describe.py
 HISTOGRAM ?= src/histogram.py
 SCATTER_PLOT ?= src/scatter_plot.py
 DESCRIBE_TEST ?= test/describe_pandas.py
+DISPLAY_DB ?= test/display_db.py
+DB_JSON ?= db.json
 
-.PHONY: all help venv install describe histogram scatter_plot describe_test clean fclean re
+.PHONY: all help venv install describe histogram scatter_plot describe_test display_db clean fclean re
 
 # Run the first mandatory program.
 all: describe
@@ -24,6 +26,7 @@ help:
 	@echo "  make histogram       - display one feature histogram"
 	@echo "  make scatter_plot    - display one simple scatter plot"
 	@echo "  make describe_test   - run the pandas reference describe"
+	@echo "  make display_db      - write database JSON to db.json"
 	@echo "  make clean           - remove Python cache files"
 	@echo "  make fclean          - clean and remove the virtual environment"
 	@echo "  make re              - rebuild the environment, then run all"
@@ -57,6 +60,10 @@ scatter_plot: venv
 # Pandas reference output for comparison only.
 describe_test: venv
 	$(PYTHON) $(DESCRIBE_TEST) $(TRAIN_DATA)
+
+# Debug helper: write parsed database as JSON.
+display_db: venv
+	PYTHONPATH=src $(PYTHON) $(DISPLAY_DB) $(TRAIN_DATA) > $(DB_JSON)
 
 # Remove Python cache files.
 clean:
