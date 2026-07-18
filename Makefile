@@ -6,9 +6,10 @@ PIP ?= $(VENV)/bin/pip3
 TRAIN_DATA ?= data/dataset_train.csv
 DESCRIBE ?= src/describe.py
 HISTOGRAM ?= src/histogram.py
+SCATTER_PLOT ?= src/scatter_plot.py
 DESCRIBE_TEST ?= test/describe_pandas.py
 
-.PHONY: all help venv install describe histogram describe_test clean fclean re
+.PHONY: all help venv install describe histogram scatter_plot describe_test clean fclean re
 
 # Run the first mandatory program.
 all: describe
@@ -21,6 +22,7 @@ help:
 	@echo "  make install         - install Python dependencies if requirements.txt exists"
 	@echo "  make describe        - run the current describe implementation"
 	@echo "  make histogram       - display one feature histogram"
+	@echo "  make scatter_plot    - display one simple scatter plot"
 	@echo "  make describe_test   - run the pandas reference describe"
 	@echo "  make clean           - remove Python cache files"
 	@echo "  make fclean          - clean and remove the virtual environment"
@@ -47,6 +49,10 @@ describe: venv
 # Display one feature histogram.
 histogram: venv
 	$(PYTHON) $(HISTOGRAM) $(TRAIN_DATA)
+
+# Display one simple scatter plot.
+scatter_plot: venv
+	$(PYTHON) $(SCATTER_PLOT) $(TRAIN_DATA)
 
 # Pandas reference output for comparison only.
 describe_test: venv
