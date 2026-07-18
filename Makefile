@@ -58,7 +58,7 @@ scatter_plot: venv
 	$(PYTHON) $(SCATTER_PLOT) $(TRAIN_DATA)
 
 # Pandas reference output for comparison only.
-describe_test: venv
+describe_pandas: venv
 	$(PYTHON) $(DESCRIBE_TEST) $(TRAIN_DATA)
 
 # Debug helper: write parsed database as JSON.
