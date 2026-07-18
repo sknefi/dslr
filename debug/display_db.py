@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+Print the parsed dataset as JSON for debugging.
+"""
 
 import json
 import sys

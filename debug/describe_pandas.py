@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 """
-Exploration version of DSLR describe.
-
-This intentionally uses pandas.DataFrame.describe(), which is forbidden for the
-final 42 project. Keep this only as a reference while learning what the final
-manual implementation should reproduce.
+Debug helper used to compare and validate our describe output.
+It uses pandas helpers that are forbidden in the subject, but it's only in
+debugger not in the main program.
 """
 
 import argparse
@@ -66,4 +64,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())
