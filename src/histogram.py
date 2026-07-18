@@ -19,6 +19,17 @@ def group_feature_by_house(
     house_name: str,
     feature_name: str,
 ) -> Dict[str, List[float]]:
+    """
+    Return one feature's numeric values grouped by house.
+
+    Example:
+    {
+        "Gryffindor": [1.2, 2.4, ...],
+        "Hufflepuff": [4.2, 6.9, ...],
+        "Ravenclaw":  [9.1, 8.6, ...],
+        "Slytherin":  [7.5, 7.4, ...],
+    }
+    """
     grouped_values: Dict[str, List[float]] = {}
 
     for row in database.rows:

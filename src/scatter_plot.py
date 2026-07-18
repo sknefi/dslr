@@ -17,6 +17,17 @@ def paired_values(
     y_feature: str,
     house_name: str,
 ) -> dict[str, tuple[List[float], List[float]]]:
+    """
+    Return paired x/y feature values grouped by house.
+
+    Example:
+    {
+        "Gryffindor": ([1.0, 2.0, ...], [6.9, 5.0, ...]),
+        "Hufflepuff": ([6.1, 4.3, ...], [8.0, 6.4, ...]),
+        "Ravenclaw":  ([3.2, 4.2, ...], [6.0, 7.8, ...]),
+        "Slytherin":  ([4.0, 5.8, ...], [5.5, 3.0, ...]),
+    }
+    """
     paired_values_by_house = {}
 
     for row in database.rows:
