@@ -7,8 +7,8 @@ TRAIN_DATA ?= data/dataset_train.csv
 DESCRIBE ?= src/describe.py
 HISTOGRAM ?= src/histogram.py
 SCATTER_PLOT ?= src/scatter_plot.py
-DESCRIBE_TEST ?= test/describe_pandas.py
-DISPLAY_DB ?= test/display_db.py
+DESCRIBE_TEST ?= debug/describe_pandas.py
+DISPLAY_DB ?= debug/display_db.py
 DB_JSON ?= db.json
 
 .PHONY: all help venv install describe histogram scatter_plot describe_test display_db clean fclean re

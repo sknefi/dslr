@@ -8,5 +8,6 @@ __pycache__/
 .venv/
 venv/
 
-# Local test/output scratch files
-test/output_*
+# Local debug output scratch files
+debug/output_*
+db.json
