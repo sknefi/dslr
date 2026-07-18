@@ -10,4 +10,4 @@ venv/
 
 # Local debug output scratch files
 debug/output_*
-db.json
+debug/db.json
