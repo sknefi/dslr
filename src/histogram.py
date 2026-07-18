@@ -5,23 +5,12 @@ from typing import Dict, List
 
 import matplotlib.pyplot as plt
 
+from constants import BIN_COUNT, \
+                      FIGURE_DPI, FIGURE_HEIGHT_PX, FIGURE_WIDTH_PX, \
+                      HISTOGRAM_ALPHA, \
+                      HOUSE_COLORS, HOUSE_COLUMN, INDEX_COLUMN
 from database import Database
 from describe import label_width, max, mean, min, std
-
-
-DEFAULT_FEATURE = "Defense Against the Dark Arts"
-HOUSE_COLUMN = "Hogwarts House"
-FIGURE_WIDTH_PX = 1280
-FIGURE_HEIGHT_PX = 720
-FIGURE_DPI = 100
-BIN_COUNT = 40
-HISTOGRAM_ALPHA = 0.42
-HOUSE_COLORS = {
-    "Gryffindor": "red",
-    "Hufflepuff": "gold",
-    "Ravenclaw":  "royalblue",
-    "Slytherin":  "green",
-}
 
 
 def group_feature_by_house(
@@ -83,7 +72,7 @@ def most_homogeneous_feature(database: Database) -> str:
     numeric_features = []
 
     for feature_name in database.numeric_columns():
-        if feature_name != "Index":
+        if feature_name != INDEX_COLUMN:
             numeric_features.append(feature_name)
     feature_name_width = label_width(numeric_features)
 

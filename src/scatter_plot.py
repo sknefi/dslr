@@ -5,16 +5,10 @@ from typing import List
 
 import matplotlib.pyplot as plt
 
+from constants import FIGURE_DPI, FIGURE_HEIGHT_PX, FIGURE_WIDTH_PX, \
+                      HOUSE_COLORS, HOUSE_COLUMN, \
+                      SCATTER_ALPHA, SCATTER_X_FEATURE, SCATTER_Y_FEATURE
 from database import Database
-from histogram import HOUSE_COLORS, HOUSE_COLUMN
-
-
-X_FEATURE = "Muggle Studies"
-Y_FEATURE = "Defense Against the Dark Arts"
-FIGURE_WIDTH_PX = 1280
-FIGURE_HEIGHT_PX = 720
-FIGURE_DPI = 100
-POINT_ALPHA = .42
 
 
 def paired_values(
@@ -46,7 +40,12 @@ def paired_values(
 
 
 def scatter_plot(database: Database) -> None:
-    paired_values_by_house = paired_values(database, X_FEATURE, Y_FEATURE, HOUSE_COLUMN)
+    paired_values_by_house = paired_values(
+        database,
+        SCATTER_X_FEATURE,
+        SCATTER_Y_FEATURE,
+        HOUSE_COLUMN,
+    )
 
     plt.figure(
         figsize=(FIGURE_WIDTH_PX / FIGURE_DPI, FIGURE_HEIGHT_PX / FIGURE_DPI),
@@ -57,13 +56,13 @@ def scatter_plot(database: Database) -> None:
         plt.scatter(
             x_values,
             y_values,
-            alpha=POINT_ALPHA,
+            alpha=SCATTER_ALPHA,
             label=house,
             color=HOUSE_COLORS.get(house),
         )
-    plt.title(f"{X_FEATURE} vs {Y_FEATURE}")
-    plt.xlabel(X_FEATURE)
-    plt.ylabel(Y_FEATURE)
+    plt.title(f"{SCATTER_X_FEATURE} vs {SCATTER_Y_FEATURE}")
+    plt.xlabel(SCATTER_X_FEATURE)
+    plt.ylabel(SCATTER_Y_FEATURE)
     plt.legend()
     plt.show()
 
@@ -79,11 +78,11 @@ def main() -> int:
         print(f"scatter_plot: {error}", file=sys.stderr)
         return 1
 
-    if not database.has_column(X_FEATURE):
-        print(f"scatter_plot: missing column: {X_FEATURE}", file=sys.stderr)
+    if not database.has_column(SCATTER_X_FEATURE):
+        print(f"scatter_plot: missing column: {SCATTER_X_FEATURE}", file=sys.stderr)
         return 1
-    if not database.has_column(Y_FEATURE):
-        print(f"scatter_plot: missing column: {Y_FEATURE}", file=sys.stderr)
+    if not database.has_column(SCATTER_Y_FEATURE):
+        print(f"scatter_plot: missing column: {SCATTER_Y_FEATURE}", file=sys.stderr)
         return 1
     if not database.has_column(HOUSE_COLUMN):
         print(f"scatter_plot: missing column: {HOUSE_COLUMN}", file=sys.stderr)
