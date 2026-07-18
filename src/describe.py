@@ -6,9 +6,7 @@ from math import sqrt
 from math import floor
 
 from database import Database
-
-
-COLUMN_PADDING = 4
+from utils import feature_width, format_number, label_width
 
 
 def count(numeric_values: List[float]) -> float:
@@ -62,25 +60,6 @@ def max(numeric_values: List[float]) -> float:
         if x > max_val:
             max_val = x
     return max_val
-
-
-def format_number(value: float) -> str:
-    return f"{value:.6f}"
-
-def label_width(labels: List[str]) -> int:
-    width: int = 0
-    for label in labels:
-        if len(label) > width:
-            width = len(label)
-    return width + COLUMN_PADDING
-
-def feature_width(feature, stat_names: List[str]) -> int:
-    width: int = len(feature["name"])
-    for stat_name in stat_names:
-        value_width = len(format_number(feature[stat_name]))
-        if value_width > width:
-            width = value_width
-    return width + COLUMN_PADDING
 
 
 def describe(database: Database) -> None:

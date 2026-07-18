@@ -10,7 +10,8 @@ from constants import BIN_COUNT, \
                       HISTOGRAM_ALPHA, \
                       HOUSE_COLORS, HOUSE_COLUMN, INDEX_COLUMN
 from database import Database
-from describe import label_width, max, mean, min, std
+from describe import max, mean, min, std
+from utils import label_width
 
 
 def group_feature_by_house(
