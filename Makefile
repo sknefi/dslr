@@ -7,11 +7,12 @@ TRAIN_DATA ?= data/dataset_train.csv
 DESCRIBE ?= src/describe.py
 HISTOGRAM ?= src/histogram.py
 SCATTER_PLOT ?= src/scatter_plot.py
+PAIR_PLOT ?= src/pair_plot.py
 DESCRIBE_TEST ?= debug/describe_pandas.py
 DISPLAY_DB ?= debug/display_db.py
 DB_JSON ?= db.json
 
-.PHONY: all help venv install describe histogram scatter_plot describe_test display_db clean fclean re
+.PHONY: all help venv install describe histogram scatter_plot pair_plot describe_test display_db clean fclean re
 
 # Run the first mandatory program.
 all: describe
@@ -25,6 +26,7 @@ help:
 	@echo "  make describe        - run the current describe implementation"
 	@echo "  make histogram       - display one feature histogram"
 	@echo "  make scatter_plot    - display one simple scatter plot"
+	@echo "  make pair_plot       - display a simple pair plot"
 	@echo "  make describe_test   - run the pandas reference describe"
 	@echo "  make display_db      - write database JSON to db.json"
 	@echo "  make clean           - remove Python cache files"
@@ -56,6 +58,10 @@ histogram: venv
 # Display one simple scatter plot.
 scatter_plot: venv
 	$(PYTHON) $(SCATTER_PLOT) $(TRAIN_DATA)
+
+# Display one simple pair plot.
+pair_plot: venv
+	$(PYTHON) $(PAIR_PLOT) $(TRAIN_DATA)
 
 # Pandas reference output for comparison only.
 describe_pandas: venv

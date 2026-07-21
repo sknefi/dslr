@@ -12,6 +12,12 @@ SCATTER_ALPHA = 0.42
 
 SCATTER_X_FEATURE = "Muggle Studies"
 SCATTER_Y_FEATURE = "Defense Against the Dark Arts"
+PAIR_PLOT_FEATURES = [
+    "Astronomy",
+    "Defense Against the Dark Arts",
+    "Charms",
+    "Ancient Runes",
+]
 
 HOUSE_COLORS = {
     "Gryffindor": "red",
