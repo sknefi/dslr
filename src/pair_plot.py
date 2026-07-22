@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from constants import BIN_COUNT, \
                       FIGURE_DPI, FIGURE_HEIGHT_PX, FIGURE_WIDTH_PX, \
                       SCATTER_ALPHA, HISTOGRAM_ALPHA, \
-                      HOUSE_COLORS, HOUSE_COLUMN_NAME, INDEX_COLUMN, PAIR_PLOT_FEATURE_COUNT, \
+                      HOUSE_COLORS, HOUSE_COLUMN_NAME, PAIR_PLOT_FEATURE_COUNT, \
                       PAIR_PLOT_MARKER_SIZE
 
 from database import Database
@@ -57,11 +57,7 @@ def selected_features(database: Database) -> List[str]:
     PAIR_PLOT_FEATURE_COUNT features are returned.
     """
     feature_scores: List[dict] = []
-    numeric_features: List[str] = []
-
-    for feature_name in database.numeric_columns():
-        if feature_name != INDEX_COLUMN:
-            numeric_features.append(feature_name)
+    numeric_features: List[str] = database.numeric_columns_except_index()
     feature_width = label_width(numeric_features)
 
     for feature_name in numeric_features:

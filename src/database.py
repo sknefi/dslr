@@ -3,6 +3,8 @@
 import csv
 from typing import Dict, List
 
+from constants import INDEX_COLUMN
+
 
 class Database:
     def __init__(self, path):
@@ -53,6 +55,13 @@ class Database:
                 if self._is_number(value):
                     numeric_count += 1
             if non_empty_count > 0 and non_empty_count == numeric_count:
+                names.append(name)
+        return names
+
+    def numeric_columns_except_index(self):
+        names: List[str] = []
+        for name in self.numeric_columns():
+            if name != INDEX_COLUMN:
                 names.append(name)
         return names
 

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from constants import BIN_COUNT, \
                       FIGURE_DPI, FIGURE_HEIGHT_PX, FIGURE_WIDTH_PX, \
                       HISTOGRAM_ALPHA, \
-                      HOUSE_COLORS, HOUSE_COLUMN_NAME, INDEX_COLUMN
+                      HOUSE_COLORS, HOUSE_COLUMN_NAME
 from database import Database
 from describe import max, mean, min, std
 from utils import label_width
@@ -83,9 +83,7 @@ def most_homogeneous_feature(database: Database) -> str:
     best_score = None
     numeric_features: List[str] = []
 
-    for feature_name in database.numeric_columns():
-        if feature_name != INDEX_COLUMN:
-            numeric_features.append(feature_name)
+    numeric_features: List[str] = database.numeric_columns_except_index()
     feature_name_width = label_width(numeric_features)
 
     for feature_name in numeric_features:

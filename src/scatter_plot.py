@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 from constants import FIGURE_DPI, FIGURE_HEIGHT_PX, FIGURE_WIDTH_PX,  \
                       SCATTER_ALPHA, \
-                      HOUSE_COLORS, HOUSE_COLUMN_NAME, INDEX_COLUMN 
+                      HOUSE_COLORS, HOUSE_COLUMN_NAME
 from database import Database
 from describe import mean, std
 from utils import label_width
@@ -117,11 +117,7 @@ def most_similar_features(database: Database) -> tuple[str, str]:
     best_feature_a = ""
     best_feature_b = ""
     best_score = None
-    numeric_features: List[str] = []
-
-    for feature_name in database.numeric_columns():
-        if feature_name != INDEX_COLUMN:
-            numeric_features.append(feature_name)
+    numeric_features: List[str] = database.numeric_columns_except_index()
     feature_width = label_width(numeric_features)
 
     for i in range(len(numeric_features)):
