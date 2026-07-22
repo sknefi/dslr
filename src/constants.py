@@ -1,4 +1,4 @@
-HOUSE_COLUMN = "Hogwarts House"
+HOUSE_COLUMN_NAME = "Hogwarts House"
 INDEX_COLUMN = "Index"
 
 FIGURE_WIDTH_PX = 1440

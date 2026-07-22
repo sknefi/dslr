@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from constants import BIN_COUNT, \
                       FIGURE_DPI, FIGURE_HEIGHT_PX, FIGURE_WIDTH_PX, \
                       SCATTER_ALPHA, HISTOGRAM_ALPHA, \
-                      HOUSE_COLORS, HOUSE_COLUMN, INDEX_COLUMN, PAIR_PLOT_FEATURE_COUNT, \
+                      HOUSE_COLORS, HOUSE_COLUMN_NAME, INDEX_COLUMN, PAIR_PLOT_FEATURE_COUNT, \
                       PAIR_PLOT_MARKER_SIZE
 
 from database import Database
@@ -25,7 +25,7 @@ def feature_separation_score(database: Database, feature_name: str) -> float:
     The score compares how far apart the house means are against the average
     spread inside each house. Higher score means better visual separation.
     """
-    grouped_values = group_feature_by_house(database, HOUSE_COLUMN, feature_name)
+    grouped_values = group_feature_by_house(database, HOUSE_COLUMN_NAME, feature_name)
     if len(grouped_values) == 0:
         return 0.0
 
@@ -98,7 +98,7 @@ def pair_plot(database: Database) -> None:
             axis = axes[row_index][column_index]
 
             if row_index == column_index: # histogram on main diagonal
-                values_by_house = group_feature_by_house(database, HOUSE_COLUMN, x_feature)
+                values_by_house = group_feature_by_house(database, HOUSE_COLUMN_NAME, x_feature)
                 for house in sorted(values_by_house):
                     axis.hist(
                         values_by_house[house],
@@ -107,7 +107,7 @@ def pair_plot(database: Database) -> None:
                         color=HOUSE_COLORS.get(house),
                     )
             else: # scatter plot everywhere else except main diagonal
-                values_by_house = paired_values(database, x_feature, y_feature, HOUSE_COLUMN)
+                values_by_house = paired_values(database, x_feature, y_feature, HOUSE_COLUMN_NAME)
                 for house in sorted(values_by_house):
                     x_values, y_values = values_by_house[house]
                     axis.scatter(
@@ -151,8 +151,8 @@ def main() -> int:
         print(f"pair_plot: {error}", file=sys.stderr)
         return 1
 
-    if not database.has_column(HOUSE_COLUMN):
-        print(f"pair_plot: missing column: {HOUSE_COLUMN}", file=sys.stderr)
+    if not database.has_column(HOUSE_COLUMN_NAME):
+        print(f"pair_plot: missing column: {HOUSE_COLUMN_NAME}", file=sys.stderr)
         return 1
 
     pair_plot(database)

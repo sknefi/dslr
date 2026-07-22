@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from constants import BIN_COUNT, \
                       FIGURE_DPI, FIGURE_HEIGHT_PX, FIGURE_WIDTH_PX, \
                       HISTOGRAM_ALPHA, \
-                      HOUSE_COLORS, HOUSE_COLUMN, INDEX_COLUMN
+                      HOUSE_COLORS, HOUSE_COLUMN_NAME, INDEX_COLUMN
 from database import Database
 from describe import max, mean, min, std
 from utils import label_width
@@ -89,7 +89,7 @@ def most_homogeneous_feature(database: Database) -> str:
     feature_name_width = label_width(numeric_features)
 
     for feature_name in numeric_features:
-        grouped_values = group_feature_by_house(database, HOUSE_COLUMN, feature_name)
+        grouped_values = group_feature_by_house(database, HOUSE_COLUMN_NAME, feature_name)
         if len(grouped_values) == 0:
             continue
         score = homogeneity_score(grouped_values)
@@ -105,7 +105,7 @@ def most_homogeneous_feature(database: Database) -> str:
 
 
 def histogram(database: Database, feature_name: str) -> None:
-    grouped_values = group_feature_by_house(database, HOUSE_COLUMN, feature_name)
+    grouped_values = group_feature_by_house(database, HOUSE_COLUMN_NAME, feature_name)
 
     if len(grouped_values) == 0:
         print(f"histogram: no numeric values found for feature: {feature_name}", file=sys.stderr)
@@ -142,8 +142,8 @@ def main() -> int:
         print(f"histogram: {error}", file=sys.stderr)
         return 1
 
-    if not database.has_column(HOUSE_COLUMN):
-        print(f"histogram: missing column: {HOUSE_COLUMN}", file=sys.stderr)
+    if not database.has_column(HOUSE_COLUMN_NAME):
+        print(f"histogram: missing column: {HOUSE_COLUMN_NAME}", file=sys.stderr)
         return 1
     feature_name = most_homogeneous_feature(database)
     if feature_name == "":

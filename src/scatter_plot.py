@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 from constants import FIGURE_DPI, FIGURE_HEIGHT_PX, FIGURE_WIDTH_PX,  \
                       SCATTER_ALPHA, \
-                      HOUSE_COLORS, HOUSE_COLUMN, INDEX_COLUMN 
+                      HOUSE_COLORS, HOUSE_COLUMN_NAME, INDEX_COLUMN 
 from database import Database
 from describe import mean, std
 from utils import label_width
@@ -153,7 +153,7 @@ def scatter_plot(database: Database, x_feature: str, y_feature: str) -> None:
         database,
         x_feature,
         y_feature,
-        HOUSE_COLUMN,
+        HOUSE_COLUMN_NAME,
     )
 
     plt.figure(
@@ -187,8 +187,8 @@ def main() -> int:
         print(f"scatter_plot: {error}", file=sys.stderr)
         return 1
 
-    if not database.has_column(HOUSE_COLUMN):
-        print(f"scatter_plot: missing column: {HOUSE_COLUMN}", file=sys.stderr)
+    if not database.has_column(HOUSE_COLUMN_NAME):
+        print(f"scatter_plot: missing column: {HOUSE_COLUMN_NAME}", file=sys.stderr)
         return 1
 
     x_feature, y_feature = most_similar_features(database)
