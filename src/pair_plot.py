@@ -7,7 +7,8 @@ import matplotlib.pyplot as plt
 from constants import BIN_COUNT, \
                       FIGURE_DPI, FIGURE_HEIGHT_PX, FIGURE_WIDTH_PX, \
                       SCATTER_ALPHA, HISTOGRAM_ALPHA, \
-                      HOUSE_COLORS, HOUSE_COLUMN, PAIR_PLOT_FEATURES
+                      HOUSE_COLORS, HOUSE_COLUMN, PAIR_PLOT_FEATURES, \
+                      PAIR_PLOT_MARKER_SIZE
 
 from database import Database
 from histogram import group_feature_by_house
@@ -46,7 +47,7 @@ def pair_plot(database: Database) -> None:
                         x_values,
                         y_values,
                         alpha=SCATTER_ALPHA,
-                        s=8,
+                        s=PAIR_PLOT_MARKER_SIZE,
                         color=HOUSE_COLORS.get(house),
                     )
 
