@@ -13,12 +13,7 @@ PAIR_PLOT_MARKER_SIZE = 10
 
 SCATTER_X_FEATURE = "Muggle Studies"
 SCATTER_Y_FEATURE = "Defense Against the Dark Arts"
-PAIR_PLOT_FEATURES = [
-    "Astronomy",
-    "Defense Against the Dark Arts",
-    "Charms",
-    "Ancient Runes",
-]
+PAIR_PLOT_FEATURE_COUNT = 4
 
 HOUSE_COLORS = {
     "Gryffindor": "red",
