@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 import csv
+from typing import Dict, List
 
 
 class Database:
     def __init__(self, path):
         self.path = path
-        self.headers = []
-        self.rows = []
+        self.headers: List[str] = []
+        self.rows: List[Dict[str, str]] = []
         self._load_csv()
 
     def row_count(self):
@@ -28,7 +29,7 @@ class Database:
 
     def numeric_column(self, name):
         self._require_column(name)
-        values = []
+        values: List[float] = []
         for row in self.rows:
             value = row[name]
             if value == "":
@@ -40,7 +41,7 @@ class Database:
         return values
 
     def numeric_columns(self):
-        names = []
+        names: List[str] = []
         for name in self.headers:
             values = self.column(name)
             non_empty_count = 0
@@ -77,7 +78,7 @@ class Database:
             raise ValueError(f"cannot parse {self.path}: {error}") from error
 
     def _normalize_row(self, row):
-        normalized = {}
+        normalized: Dict[str, str] = {}
         for header in self.headers:
             value = row.get(header, "")
             normalized[header] = "" if value is None else value.strip()

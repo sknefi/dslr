@@ -59,7 +59,7 @@ def homogeneity_score(grouped_values: Dict[str, List[float]]) -> float:
     normalized by the full feature range so features with different scales can
     be compared. Lower score means more homogeneous.
     """
-    all_values = []
+    all_values: List[float] = []
     for values in grouped_values.values():
         all_values += values
 
@@ -67,8 +67,8 @@ def homogeneity_score(grouped_values: Dict[str, List[float]]) -> float:
     if feature_range == 0:
         return 0.0
 
-    house_means = []
-    house_stds = []
+    house_means: List[float] = []
+    house_stds: List[float] = []
     for values in grouped_values.values():
         house_means.append(mean(values))
         house_stds.append(std(values))
@@ -81,7 +81,7 @@ def homogeneity_score(grouped_values: Dict[str, List[float]]) -> float:
 def most_homogeneous_feature(database: Database) -> str:
     best_feature = ""
     best_score = None
-    numeric_features = []
+    numeric_features: List[str] = []
 
     for feature_name in database.numeric_columns():
         if feature_name != INDEX_COLUMN:

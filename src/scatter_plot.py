@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from typing import List
+from typing import Dict, List
 
 import matplotlib.pyplot as plt
 
@@ -30,7 +30,7 @@ def paired_values(
         "Slytherin":  ([4.0, 5.8, ...], [5.5, 3.0, ...]),
     }
     """
-    paired_values_by_house = {}
+    paired_values_by_house: Dict[str, tuple[List[float], List[float]]] = {}
 
     for row in database.rows:
         house = row[house_name]
@@ -117,7 +117,7 @@ def most_similar_features(database: Database) -> tuple[str, str]:
     best_feature_a = ""
     best_feature_b = ""
     best_score = None
-    numeric_features = []
+    numeric_features: List[str] = []
 
     for feature_name in database.numeric_columns():
         if feature_name != INDEX_COLUMN:

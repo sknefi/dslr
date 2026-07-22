@@ -29,8 +29,8 @@ def feature_separation_score(database: Database, feature_name: str) -> float:
     if len(grouped_values) == 0:
         return 0.0
 
-    house_means = []
-    house_stds = []
+    house_means: List[float] = []
+    house_stds: List[float] = []
     for values in grouped_values.values():
         if len(values) < 2:
             continue
@@ -56,8 +56,8 @@ def selected_features(database: Database) -> List[str]:
     sorted from highest score to lowest, then only the first
     PAIR_PLOT_FEATURE_COUNT features are returned.
     """
-    feature_scores = []
-    numeric_features = []
+    feature_scores: List[dict] = []
+    numeric_features: List[str] = []
 
     for feature_name in database.numeric_columns():
         if feature_name != INDEX_COLUMN:
@@ -73,7 +73,7 @@ def selected_features(database: Database) -> List[str]:
         print(f"{feature_name:<{feature_width}} {score:.6f}")
 
     feature_scores.sort(key=lambda feature: feature["score"], reverse=True)
-    selected = []
+    selected: List[str] = []
     for feature in feature_scores[:PAIR_PLOT_FEATURE_COUNT]:
         selected.append(feature["name"])
 
@@ -129,8 +129,8 @@ def pair_plot(database: Database) -> None:
             else:
                 axis.set_yticklabels([])
 
-    handles = []
-    labels = []
+    handles: list = []
+    labels: List[str] = []
     for house in sorted(HOUSE_COLORS):
         handles.append(plt.Line2D([], [], marker="o", linestyle="", color=HOUSE_COLORS[house]))
         labels.append(house)

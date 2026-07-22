@@ -64,7 +64,7 @@ def max(numeric_values: List[float]) -> float:
 
 def describe(database: Database) -> None:
     numeric_column_names: List[str] = database.numeric_columns()
-    features = []
+    features: List[dict] = []
 
     for column_name in numeric_column_names:
         numeric_values = database.numeric_column(column_name)
@@ -83,7 +83,7 @@ def describe(database: Database) -> None:
 
     stat_names = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
     stat_label_width = label_width(stat_names)
-    feature_widths = []
+    feature_widths: List[int] = []
     for feature in features:
         feature_widths.append(feature_width(feature, stat_names))
 
