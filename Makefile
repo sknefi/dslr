@@ -8,11 +8,12 @@ DESCRIBE ?= src/describe.py
 HISTOGRAM ?= src/histogram.py
 SCATTER_PLOT ?= src/scatter_plot.py
 PAIR_PLOT ?= src/pair_plot.py
+LOGREG_TRAIN ?= src/logreg_train.py
 DESCRIBE_TEST ?= debug/describe_pandas.py
 DISPLAY_DB ?= debug/display_db.py
 DB_JSON ?= db.json
 
-.PHONY: all help venv install describe histogram scatter_plot pair_plot describe_test display_db clean fclean re
+.PHONY: all help venv install describe histogram scatter_plot pair_plot logreg_train describe_test display_db clean fclean re
 
 # Run the first mandatory program.
 all: describe
@@ -27,6 +28,7 @@ help:
 	@echo "  make histogram       - display one feature histogram"
 	@echo "  make scatter_plot    - display one simple scatter plot"
 	@echo "  make pair_plot       - display a simple pair plot"
+	@echo "  make logreg_train    - start logistic regression training"
 	@echo "  make describe_test   - run the pandas reference describe"
 	@echo "  make display_db      - write database JSON to db.json"
 	@echo "  make clean           - remove Python cache files"
@@ -62,6 +64,10 @@ scatter_plot: venv
 # Display one simple pair plot.
 pair_plot: venv
 	$(PYTHON) $(PAIR_PLOT) $(TRAIN_DATA)
+
+# Train logistic regression model.
+logreg_train: venv
+	$(PYTHON) $(LOGREG_TRAIN) $(TRAIN_DATA)
 
 # Pandas reference output for comparison only.
 describe_pandas: venv
