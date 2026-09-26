@@ -7,17 +7,24 @@ from constants import HOUSE_COLUMN_NAME
 from database import Database
 
 
-def train(database: Database) -> None:
-    houses: List[str] = sorted(set(database.column(HOUSE_COLUMN_NAME)))
-    feature_names: List[str] = database.numeric_columns_except_index()
+def selected_feature_names(database: Database) -> List[str]:
+    return database.numeric_columns_except_index()
 
+
+def print_dataset_info(database: Database, feature_names: List[str]) -> None:
+    houses: List[str] = sorted(set(database.column(HOUSE_COLUMN_NAME)))
     print(f"Rows: {database.row_count()}")
     print(f"Columns: {database.column_count()}")
     print(f"Target column: {HOUSE_COLUMN_NAME}")
     print(f"Houses: {', '.join(houses)}")
-    print(f"Numeric features: {len(feature_names)}")
+    print(f"Selected numeric features: {len(feature_names)}")
     for feature_name in feature_names:
         print(f"- {feature_name}")
+
+
+def train(database: Database) -> None:
+    feature_names: List[str] = selected_feature_names(database)
+    print_dataset_info(database, feature_names)
 
 
 def main() -> int:
@@ -33,6 +40,10 @@ def main() -> int:
 
     if not database.has_column(HOUSE_COLUMN_NAME):
         print(f"logreg_train: missing column: {HOUSE_COLUMN_NAME}", file=sys.stderr)
+        return 1
+
+    if len(selected_feature_names(database)) == 0:
+        print("logreg_train: no numeric features found", file=sys.stderr)
         return 1
 
     train(database)
