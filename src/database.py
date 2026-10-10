@@ -10,6 +10,12 @@ class Database:
     def __init__(self, path):
         self.path = path
         self.headers: List[str] = []
+        # Example rows:
+        # [
+        #     {"Index": "0", "Hogwarts House": "Ravenclaw", "Astronomy": "373.3"},
+        #     {"Index": "1", "Hogwarts House": "Slytherin", "Astronomy": ""},
+        #     {"Index": "2", "Hogwarts House": "Gryffindor", "Astronomy": "-200.5"},
+        # ]
         self.rows: List[Dict[str, str]] = []
         self._load_csv()
 
