@@ -5,7 +5,7 @@ from typing import Dict, List
 
 from constants import HOUSE_COLUMN_NAME
 from database import Database
-from describe import mean
+from describe import mean, std
 from utils import label_width
 
 
@@ -96,15 +96,81 @@ def training_data(
     return x_train, y_train
 
 
+def feature_normalization_values(
+    x_train: List[List[float]],
+    feature_names: List[str],
+) -> Dict[str, Dict[str, float]]:
+    """
+    Return mean and std for every feature column.
+
+    Example:
+    {
+        "Astronomy": {
+            "mean": 39.797131,
+            "std": 520.298268,
+        }
+    }
+    """
+    normalization_values: Dict[str, Dict[str, float]] = {}
+
+    for feature_index, feature_name in enumerate(feature_names):
+        values: List[float] = []
+        for row in x_train:
+            values.append(row[feature_index])
+
+        feature_std = std(values)
+        if feature_std == 0:
+            feature_std = 1.0
+
+        normalization_values[feature_name] = {
+            "mean": mean(values),
+            "std": feature_std,
+        }
+
+    return normalization_values
+
+
+def normalize_training_data(
+    x_train: List[List[float]],
+    feature_names: List[str],
+    normalization_values: Dict[str, Dict[str, float]],
+) -> List[List[float]]:
+    """
+    Return normalized x_train.
+
+    Formula:
+    normalized_value = (value - feature_mean) / feature_std
+    """
+    x_train_normalized: List[List[float]] = []
+
+    for row in x_train:
+        normalized_row: List[float] = []
+        for feature_index, feature_name in enumerate(feature_names):
+            value = row[feature_index]
+            feature_mean = normalization_values[feature_name]["mean"]
+            feature_std = normalization_values[feature_name]["std"]
+            normalized_row.append((value - feature_mean) / feature_std)
+        x_train_normalized.append(normalized_row)
+
+    return x_train_normalized
+
+
 def train(database: Database) -> None:
     feature_names: List[str] = selected_feature_names(database)
     fill_values: Dict[str, float] = feature_fill_values(database, feature_names)
     x_train, y_train = training_data(database, feature_names, fill_values)
+    normalization_values = feature_normalization_values(x_train, feature_names)
+    x_train_normalized = normalize_training_data(
+        x_train,
+        feature_names,
+        normalization_values,
+    )
 
     print_dataset_info(database, feature_names)
     print(f"Training rows: {len(x_train)}")
     print(f"Labels: {len(y_train)}")
     print(f"Features per row: {len(feature_names)}")
+    print(f"Normalized rows: {len(x_train_normalized)}")
 
 
 def main() -> int:
