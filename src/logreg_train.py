@@ -14,6 +14,16 @@ def selected_feature_names(database: Database) -> List[str]:
 
 
 def feature_fill_values(database: Database, feature_names: List[str]) -> Dict[str, float]:
+    """
+    Return the average value for every selected feature.
+    These values will be used when a student has an empty cell.
+
+    Example:
+    {
+        "Astronomy": 42.797131,
+        "Herbology": 1.921020,
+    }
+    """
     fill_values: Dict[str, float] = {}
     for feature_name in feature_names:
         values: List[float] = database.numeric_column(feature_name)
@@ -43,15 +53,35 @@ def training_data(
     feature_names: List[str],
     fill_values: Dict[str, float],
 ) -> tuple[List[List[float]], List[str]]:
+    """
+    Return clean training data.
+
+    x_train contains one list of numeric feature values per student.
+    Empty cells are replaced with the feature average from fill_values.
+
+    y_train contains the correct house for each matching x_train row.
+
+    Example:
+    x_train = [
+        [49634.57, 39.79, 1.14, ...],
+        [104956.0, -489.55, 4.20, ...],
+    ]
+    y_train = [
+        "Ravenclaw",
+        "Slytherin"
+    ]
+
+    x_train[0] and y_train[0] describe the same student.
+    """
     x_train: List[List[float]] = []
     y_train: List[str] = []
 
     for row in database.rows:
         house = row[HOUSE_COLUMN_NAME]
-        
+
         if house == "":
             continue
-        
+
         feature_values: List[float] = []
         for feature_name in feature_names:
             value = row[feature_name]
