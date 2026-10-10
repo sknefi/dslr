@@ -38,12 +38,43 @@ def print_feature_info(database: Database, feature_names: List[str], fill_values
         print(f"{feature_name:<{feature_width}} {missing_count:>8} {fill_values[feature_name]:>14.6f}")
 
 
+def training_data(
+    database: Database,
+    feature_names: List[str],
+    fill_values: Dict[str, float],
+) -> tuple[List[List[float]], List[str]]:
+    x_train: List[List[float]] = []
+    y_train: List[str] = []
+
+    for row in database.rows:
+        house = row[HOUSE_COLUMN_NAME]
+        
+        if house == "":
+            continue
+        
+        feature_values: List[float] = []
+        for feature_name in feature_names:
+            value = row[feature_name]
+            if value == "":
+                feature_values.append(fill_values[feature_name])
+            else:
+                feature_values.append(float(value))
+
+        x_train.append(feature_values)
+        y_train.append(house)
+
+    return x_train, y_train
+
+
 def train(database: Database) -> None:
     feature_names: List[str] = selected_feature_names(database)
     fill_values: Dict[str, float] = feature_fill_values(database, feature_names)
+    x_train, y_train = training_data(database, feature_names, fill_values)
 
     print_dataset_info(database, feature_names)
-    print_feature_info(database, feature_names, fill_values)
+    print(f"Training rows: {len(x_train)}")
+    print(f"Labels: {len(y_train)}")
+    print(f"Features per row: {len(feature_names)}")
 
 
 def main() -> int:
