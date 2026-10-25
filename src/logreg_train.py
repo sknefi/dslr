@@ -120,10 +120,31 @@ def normalize_training_data(
     normalization_values: Dict[str, Dict[str, float]],
 ) -> List[List[float]]:
     """
-    Return normalized x_train.
+    Return a new list of student rows with normalized feature values.
 
-    Formula:
-    normalized_value = (value - feature_mean) / feature_std
+    Input example:
+    feature_names = ["Astronomy", "Herbology"]
+    x_train = [
+        [8.0, 80.0],    # first student
+        [10.0, 100.0],  # second student
+        [12.0, 120.0],  # third student
+    ]
+    normalization_values = {
+        "Astronomy": {"mean": 10.0, "std": 2.0},
+        "Herbology": {"mean": 100.0, "std": 20.0},
+    }
+
+    Output for those inputs:
+    [
+        [-1.0, -1.0],
+        [0.0, 0.0],
+        [1.0, 1.0],
+    ]
+
+    Each cell uses (value - feature mean) / feature std. For example,
+    Astronomy 8.0 becomes (8.0 - 10.0) / 2.0 = -1.0.
+    The row and feature order stay the same; x_train is not changed.
+    Use these same normalization_values later for test students.
     """
     x_train_normalized: List[List[float]] = []
 
