@@ -28,3 +28,8 @@ HOUSE_COLORS = {
     "Ravenclaw": "royalblue",
     "Slytherin": "green",
 }
+
+# First logistic regression experiment: one house versus all others.
+TRAINING_HOUSE = "Gryffindor"
+LEARNING_RATE = 0.1
+TRAINING_EPOCHS = 1000

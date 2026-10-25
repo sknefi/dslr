@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
+from math import exp
 from typing import Dict, List
 
-from constants import HOUSE_COLUMN_NAME
+from constants import HOUSE_COLUMN_NAME, LEARNING_RATE, TRAINING_EPOCHS, TRAINING_HOUSE
 from database import Database
 from describe import mean, std
 from utils import label_width
@@ -155,6 +156,54 @@ def normalize_training_data(
     return x_train_normalized
 
 
+def binary_labels(y_train: List[str], house: str) -> List[int]:
+    """Return 1 for students in house and 0 for students in other houses.
+
+    Example: ["Gryffindor", "Ravenclaw"] -> [1, 0] for Gryffindor.
+    """
+    return [1 if label == house else 0 for label in y_train]
+
+
+def sigmoid(value: float) -> float:
+    """Turn a model score into a probability between 0 and 1."""
+    if value >= 0:
+        return 1.0 / (1.0 + exp(-value))
+    positive_exp = exp(value)
+    return positive_exp / (1.0 + positive_exp)
+
+
+def train_binary_model(
+    x_train: List[List[float]],
+    y_binary: List[int],
+    learning_rate: float,
+    epochs: int,
+) -> tuple[List[float], float]:
+    """Train one house-versus-rest model; return its weights and bias."""
+    weights: List[float] = [0.0] * len(x_train[0])
+    bias                 = 0.0
+    student_count        = len(x_train)
+
+    for _ in range(epochs):
+        weight_gradients: List[float] = [0.0] * len(weights)
+        bias_gradient = 0.0
+
+        for features, target in zip(x_train, y_binary):
+            score = bias
+            for index, value in enumerate(features):
+                score += weights[index] * value
+            error = sigmoid(score) - target
+
+            for index, value in enumerate(features):
+                weight_gradients[index] += error * value
+            bias_gradient += error
+
+        for index in range(len(weights)):
+            weights[index] -= learning_rate * weight_gradients[index] / student_count
+        bias -= learning_rate * bias_gradient / student_count
+
+    return weights, bias
+
+
 def train(database: Database) -> None:
     feature_names: List[str] = selected_feature_names(database)
     fill_values: Dict[str, float] = feature_fill_values(database, feature_names)
@@ -165,12 +214,24 @@ def train(database: Database) -> None:
         feature_names,
         normalization_values,
     )
+    y_binary = binary_labels(y_train, TRAINING_HOUSE)
+    weights, bias = train_binary_model(
+        x_train_normalized,
+        y_binary,
+        LEARNING_RATE,
+        TRAINING_EPOCHS,
+    )
 
     print_dataset_info(database, feature_names)
     print(f"Training rows: {len(x_train)}")
     print(f"Labels: {len(y_train)}")
     print(f"Features per row: {len(feature_names)}")
     print(f"Normalized rows: {len(x_train_normalized)}")
+    print(f"\nModel: {TRAINING_HOUSE} versus other houses")
+    print(f"Positive labels: {sum(y_binary)} / {len(y_binary)}")
+    print(f"Bias: {bias:.6f}")
+    for feature_name, weight in zip(feature_names, weights):
+        print(f"  {feature_name:<{label_width(feature_names)}} {weight:>10.6f}")
 
 
 def main() -> int:
