@@ -32,23 +32,6 @@ def feature_fill_values(database: Database, feature_names: List[str]) -> Dict[st
     return fill_values
 
 
-def print_dataset_info(database: Database, feature_names: List[str]) -> None:
-    houses: List[str] = sorted(set(database.column(HOUSE_COLUMN_NAME)))
-    print(f"Rows: {database.row_count()}")
-    print(f"Columns: {database.column_count()}")
-    print(f"Target column: {HOUSE_COLUMN_NAME}")
-    print(f"Houses: {', '.join(houses)}")
-    print(f"Selected numeric features: {len(feature_names)}")
-
-
-def print_feature_info(database: Database, feature_names: List[str], fill_values: Dict[str, float]) -> None:
-    feature_width = label_width(feature_names)
-    print(f"{'Feature':<{feature_width}} {'Missing':>8} {'Fill value':>14}")
-    for feature_name in feature_names:
-        missing_count = database.missing_count(feature_name)
-        print(f"{feature_name:<{feature_width}} {missing_count:>8} {fill_values[feature_name]:>14.6f}")
-
-
 def training_data(
     database: Database,
     feature_names: List[str],
@@ -222,16 +205,11 @@ def train(database: Database) -> None:
         TRAINING_EPOCHS,
     )
 
-    print_dataset_info(database, feature_names)
-    print(f"Training rows: {len(x_train)}")
-    print(f"Labels: {len(y_train)}")
-    print(f"Features per row: {len(feature_names)}")
-    print(f"Normalized rows: {len(x_train_normalized)}")
-    print(f"\nModel: {TRAINING_HOUSE} versus other houses")
-    print(f"Positive labels: {sum(y_binary)} / {len(y_binary)}")
+    print(f"Model: {TRAINING_HOUSE} versus other houses")
     print(f"Bias: {bias:.6f}")
+    feature_width = label_width(feature_names)
     for feature_name, weight in zip(feature_names, weights):
-        print(f"  {feature_name:<{label_width(feature_names)}} {weight:>10.6f}")
+        print(f"  {feature_name:<{feature_width}} {weight:>10.6f}")
 
 
 def main() -> int:
