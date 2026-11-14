@@ -103,6 +103,28 @@ def predict_house(features: List[float], model: dict) -> tuple[str, Dict[str, fl
     return best_house, probabilities
 
 
+def predict_students(
+    students: List[tuple[str, List[float]]],
+    model: dict
+) -> List[tuple[str, str, Dict[str, float]]]:
+    """Predict a house for each student while keeping the original Index."""
+    predictions: List[tuple[str, str, Dict[str, float]]] = []
+    for index, features in students:
+        house, probabilities = predict_house(features, model)
+        predictions.append((index, house, probabilities))
+    return predictions
+
+
+def print_prediction_preview(
+    predictions: List[tuple[str, str, Dict[str, float]]]
+) -> None:
+    """Print the prediction count and the first five results."""
+    print(f"Predicted {len(predictions)} students")
+    for index, house, probabilities in predictions[::]:
+        scores = ", ".join(f"{name}: {value:.1%}" for name, value in probabilities.items())
+        print(f"{index}: {house} ({scores})")
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print(f"Usage: {sys.argv[0]} dataset_test.csv output/model.json", file=sys.stderr)
@@ -117,15 +139,8 @@ def main() -> int:
         print(f"logreg_predict: {error}", file=sys.stderr)
         return 1
 
-    predictions: List[tuple[str, str, Dict[str, float]]] = []
-    for index, features in students:
-        house, probabilities = predict_house(features, model)
-        predictions.append((index, house, probabilities))
-
-    print(f"Predicted {len(predictions)} students")
-    for index, house, probabilities in predictions[:5]:
-        scores = ", ".join(f"{name}: {value:.1%}" for name, value in probabilities.items())
-        print(f"{index}: {house} ({scores})")
+    predictions = predict_students(students, model)
+    print_prediction_preview(predictions)
     return 0
 
 
