@@ -34,3 +34,4 @@ HOUSE_COLORS = {
 LEARNING_RATE = 0.1
 TRAINING_EPOCHS = 1000
 MODEL_FILE = "output/model.json"
+PREDICTIONS_FILE = "output/houses.csv"

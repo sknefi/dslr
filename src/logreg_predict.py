@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import csv
 import json
 import sys
+from pathlib import Path
 from typing import Dict, List
 
-from constants import HOUSES, INDEX_COLUMN
+from constants import HOUSE_COLUMN_NAME, HOUSES, INDEX_COLUMN, PREDICTIONS_FILE
 from database import Database
 from logreg_train import sigmoid
 
@@ -125,6 +127,18 @@ def print_prediction_preview(
         print(f"{index}: {house} ({scores})")
 
 
+def save_predictions(
+    predictions: List[tuple[str, str, Dict[str, float]]], path: str
+) -> None:
+    """Write each student's Index and predicted house to a CSV file."""
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow([INDEX_COLUMN, HOUSE_COLUMN_NAME])
+        for index, house, _ in predictions:
+            writer.writerow([index, house])
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print(f"Usage: {sys.argv[0]} dataset_test.csv output/model.json", file=sys.stderr)
@@ -135,11 +149,12 @@ def main() -> int:
         model = load_model(sys.argv[2])
         validate_inputs(database, model)
         students = prepare_prediction_data(database, model)
-    except ValueError as error:
+        predictions = predict_students(students, model)
+        save_predictions(predictions, PREDICTIONS_FILE)
+    except (ValueError, OSError) as error:
         print(f"logreg_predict: {error}", file=sys.stderr)
         return 1
 
-    predictions = predict_students(students, model)
     print_prediction_preview(predictions)
     return 0
 

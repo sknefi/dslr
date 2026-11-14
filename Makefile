@@ -32,7 +32,7 @@ help:
 	@echo "  make scatter_plot    - display one simple scatter plot"
 	@echo "  make pair_plot       - display a simple pair plot"
 	@echo "  make logreg_train    - train house models and save output/model.json"
-	@echo "  make logreg_predict  - score test students with saved models"
+	@echo "  make logreg_predict  - save predicted houses to output/houses.csv"
 	@echo "  make describe_test   - run the pandas reference describe"
 	@echo "  make display_db      - write database JSON to db.json"
 	@echo "  make clean           - remove Python cache files"
