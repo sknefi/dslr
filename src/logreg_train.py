@@ -4,7 +4,7 @@ import sys
 from math import exp
 from typing import Dict, List
 
-from constants import HOUSE_COLUMN_NAME, LEARNING_RATE, TRAINING_EPOCHS, TRAINING_HOUSE
+from constants import HOUSES, HOUSE_COLUMN_NAME, LEARNING_RATE, TRAINING_EPOCHS
 from database import Database
 from describe import mean, std
 from utils import label_width
@@ -218,19 +218,21 @@ def train(database: Database) -> None:
         feature_names,
         normalization_values,
     )
-    y_binary = binary_labels(y_train, TRAINING_HOUSE)
-    weights, bias = train_binary_model(
-        x_train_normalized,
-        y_binary,
-        LEARNING_RATE,
-        TRAINING_EPOCHS,
-    )
-
-    print(f"Model: {TRAINING_HOUSE} versus other houses")
-    print(f"Bias: {bias:.6f}")
     feature_width = label_width(feature_names)
-    for feature_name, weight in zip(feature_names, weights):
-        print(f"  {feature_name:<{feature_width}} {weight:>10.6f}")
+    for house in HOUSES:
+        y_binary = binary_labels(y_train, house)
+        weights, bias = train_binary_model(
+            x_train_normalized,
+            y_binary,
+            LEARNING_RATE,
+            TRAINING_EPOCHS,
+        )
+
+        print(f"Model: {house} versus other houses")
+        print(f"Bias: {bias:.6f}")
+        for feature_name, weight in zip(feature_names, weights):
+            print(f"  {feature_name:<{feature_width}} {weight:>10.6f}")
+        print()
 
 
 def main() -> int:
@@ -246,6 +248,17 @@ def main() -> int:
 
     if not database.has_column(HOUSE_COLUMN_NAME):
         print(f"logreg_train: missing column: {HOUSE_COLUMN_NAME}", file=sys.stderr)
+        return 1
+
+    present_houses = set(database.column(HOUSE_COLUMN_NAME)) - {""}
+    expected_houses = set(HOUSES)
+    missing_houses = expected_houses - present_houses
+    unknown_houses = present_houses - expected_houses
+    if missing_houses:
+        print(f"logreg_train: missing houses: {', '.join(sorted(missing_houses))}", file=sys.stderr)
+        return 1
+    if unknown_houses:
+        print(f"logreg_train: unknown houses: {', '.join(sorted(unknown_houses))}", file=sys.stderr)
         return 1
 
     if len(selected_feature_names(database)) == 0:

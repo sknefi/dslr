@@ -1,6 +1,7 @@
 # Dataset columns used across scripts.
 HOUSE_COLUMN_NAME = "Hogwarts House"
 INDEX_COLUMN = "Index"
+HOUSES = ("Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin")
 
 # Shared matplotlib figure size.
 FIGURE_WIDTH_PX = 1440
@@ -29,7 +30,6 @@ HOUSE_COLORS = {
     "Slytherin": "green",
 }
 
-# First logistic regression experiment: one house versus all others.
-TRAINING_HOUSE = "Gryffindor"
+# Logistic regression training settings.
 LEARNING_RATE = 0.1
 TRAINING_EPOCHS = 1000
