@@ -12,5 +12,5 @@ venv/
 debug/output_*
 debug/db.json
 
-# Generated training output
-model.json
+# Generated model and predictions
+output/

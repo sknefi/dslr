@@ -4,16 +4,19 @@ PYTHON ?= $(VENV)/bin/python3
 PIP ?= $(VENV)/bin/pip3
 
 TRAIN_DATA ?= data/dataset_train.csv
+TEST_DATA ?= data/dataset_test.csv
 DESCRIBE ?= src/describe.py
 HISTOGRAM ?= src/histogram.py
 SCATTER_PLOT ?= src/scatter_plot.py
 PAIR_PLOT ?= src/pair_plot.py
 LOGREG_TRAIN ?= src/logreg_train.py
+LOGREG_PREDICT ?= src/logreg_predict.py
+MODEL_FILE ?= output/model.json
 DESCRIBE_TEST ?= debug/describe_pandas.py
 DISPLAY_DB ?= debug/display_db.py
 DB_JSON ?= db.json
 
-.PHONY: all help venv install describe histogram scatter_plot pair_plot logreg_train describe_test display_db clean fclean re
+.PHONY: all help venv install describe histogram scatter_plot pair_plot logreg_train logreg_predict describe_test display_db clean fclean re
 
 # Run the first mandatory program.
 all: describe
@@ -28,7 +31,8 @@ help:
 	@echo "  make histogram       - display one feature histogram"
 	@echo "  make scatter_plot    - display one simple scatter plot"
 	@echo "  make pair_plot       - display a simple pair plot"
-	@echo "  make logreg_train    - train house models and save model.json"
+	@echo "  make logreg_train    - train house models and save output/model.json"
+	@echo "  make logreg_predict  - validate test data and saved model"
 	@echo "  make describe_test   - run the pandas reference describe"
 	@echo "  make display_db      - write database JSON to db.json"
 	@echo "  make clean           - remove Python cache files"
@@ -68,6 +72,10 @@ pair_plot: venv
 # Train and save the four house models.
 logreg_train: venv
 	$(PYTHON) $(LOGREG_TRAIN) $(TRAIN_DATA)
+
+# Load and validate prediction inputs.
+logreg_predict: venv
+	$(PYTHON) $(LOGREG_PREDICT) $(TEST_DATA) $(MODEL_FILE)
 
 # Pandas reference output for comparison only.
 describe_pandas: venv

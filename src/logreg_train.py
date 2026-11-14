@@ -3,6 +3,7 @@
 import json
 import sys
 from math import exp
+from pathlib import Path
 from typing import Dict, List
 
 from constants import HOUSES, HOUSE_COLUMN_NAME, LEARNING_RATE, MODEL_FILE, TRAINING_EPOCHS
@@ -248,6 +249,7 @@ def train(database: Database) -> dict:
 
 def save_model(model: dict, path: str) -> None:
     """Save the trained models to a JSON file."""
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as file:
         json.dump(model, file, indent=2, allow_nan=False)
         file.write("\n")

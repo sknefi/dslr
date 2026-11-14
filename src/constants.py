@@ -33,4 +33,4 @@ HOUSE_COLORS = {
 # Logistic regression training settings.
 LEARNING_RATE = 0.1
 TRAINING_EPOCHS = 1000
-MODEL_FILE = "model.json"
+MODEL_FILE = "output/model.json"
