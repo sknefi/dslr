@@ -2,10 +2,11 @@
 
 import json
 import sys
-from typing import List
+from typing import Dict, List
 
 from constants import HOUSES, INDEX_COLUMN
 from database import Database
+from logreg_train import sigmoid
 
 
 def load_model(path: str) -> dict:
@@ -32,6 +33,18 @@ def validate_inputs(database: Database, model: dict) -> None:
     models = model.get("models")
     if not isinstance(models, dict) or set(models) != set(HOUSES):
         raise ValueError("model must contain all four houses")
+    for house in HOUSES:
+        house_model = models[house]
+        if not isinstance(house_model, dict):
+            raise ValueError(f"invalid model for {house}")
+        weights = house_model.get("weights")
+        bias = house_model.get("bias")
+        if not isinstance(weights, dict) or set(weights) != set(feature_names):
+            raise ValueError(f"invalid weights for {house}")
+        if not isinstance(bias, (int, float)) or not all(
+            isinstance(weight, (int, float)) for weight in weights.values()
+        ):
+            raise ValueError(f"invalid numeric values for {house}")
 
     fill_values = model.get("fill_values")
     normalization_values = model.get("normalization_values")
@@ -69,6 +82,27 @@ def prepare_prediction_data(
     return students
 
 
+def predict_house(features: List[float], model: dict) -> tuple[str, Dict[str, float]]:
+    """Return the most likely house and each house model's probability."""
+    probabilities: Dict[str, float] = {}
+    best_house = ""
+    best_probability = -1.0
+
+    for house in HOUSES:
+        house_model = model["models"][house]
+        score = house_model["bias"]
+        for name, value in zip(model["feature_names"], features):
+            score += house_model["weights"][name] * value
+
+        probability = sigmoid(score)
+        probabilities[house] = probability
+        if probability > best_probability:
+            best_house = house
+            best_probability = probability
+
+    return best_house, probabilities
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print(f"Usage: {sys.argv[0]} dataset_test.csv output/model.json", file=sys.stderr)
@@ -83,7 +117,15 @@ def main() -> int:
         print(f"logreg_predict: {error}", file=sys.stderr)
         return 1
 
-    print(f"Prepared {len(students)} students for prediction")
+    predictions: List[tuple[str, str, Dict[str, float]]] = []
+    for index, features in students:
+        house, probabilities = predict_house(features, model)
+        predictions.append((index, house, probabilities))
+
+    print(f"Predicted {len(predictions)} students")
+    for index, house, probabilities in predictions[:5]:
+        scores = ", ".join(f"{name}: {value:.1%}" for name, value in probabilities.items())
+        print(f"{index}: {house} ({scores})")
     return 0
 
 

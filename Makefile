@@ -32,7 +32,7 @@ help:
 	@echo "  make scatter_plot    - display one simple scatter plot"
 	@echo "  make pair_plot       - display a simple pair plot"
 	@echo "  make logreg_train    - train house models and save output/model.json"
-	@echo "  make logreg_predict  - validate test data and saved model"
+	@echo "  make logreg_predict  - score test students with saved models"
 	@echo "  make describe_test   - run the pandas reference describe"
 	@echo "  make display_db      - write database JSON to db.json"
 	@echo "  make clean           - remove Python cache files"
@@ -73,7 +73,7 @@ pair_plot: venv
 logreg_train: venv
 	$(PYTHON) $(LOGREG_TRAIN) $(TRAIN_DATA)
 
-# Load and validate prediction inputs.
+# Score test students with the saved house models.
 logreg_predict: venv
 	$(PYTHON) $(LOGREG_PREDICT) $(TEST_DATA) $(MODEL_FILE)
 
