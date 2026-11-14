@@ -2,6 +2,7 @@
 
 import json
 import sys
+from typing import List
 
 from constants import HOUSES, INDEX_COLUMN
 from database import Database
@@ -48,6 +49,26 @@ def validate_inputs(database: Database, model: dict) -> None:
             raise ValueError(f"missing column in dataset: {name}")
 
 
+def prepare_prediction_data(
+    database: Database,
+    model: dict
+) -> List[tuple[str, List[float]]]:
+    """Return each student's original Index and normalized feature values.
+
+    Example: [("0", [-0.48, 1.27, ...]), ("1", [0.15, -0.79, ...])].
+    """
+    students: List[tuple[str, List[float]]] = []
+    for row in database.rows:
+        features: List[float] = []
+        for name in model["feature_names"]:
+            raw_value = row[name]
+            value = model["fill_values"][name] if raw_value == "" else float(raw_value)
+            stats = model["normalization_values"][name]
+            features.append((value - stats["mean"]) / stats["std"])
+        students.append((row[INDEX_COLUMN], features))
+    return students
+
+
 def main() -> int:
     if len(sys.argv) != 3:
         print(f"Usage: {sys.argv[0]} dataset_test.csv output/model.json", file=sys.stderr)
@@ -57,10 +78,12 @@ def main() -> int:
         database = Database(sys.argv[1])
         model = load_model(sys.argv[2])
         validate_inputs(database, model)
+        students = prepare_prediction_data(database, model)
     except ValueError as error:
         print(f"logreg_predict: {error}", file=sys.stderr)
         return 1
 
+    print(f"Prepared {len(students)} students for prediction")
     return 0
 
 
