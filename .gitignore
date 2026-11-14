@@ -11,3 +11,6 @@ venv/
 # Local debug output scratch files
 debug/output_*
 debug/db.json
+
+# Generated training output
+model.json

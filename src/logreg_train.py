@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
+import json
 import sys
 from math import exp
 from typing import Dict, List
 
-from constants import HOUSES, HOUSE_COLUMN_NAME, LEARNING_RATE, TRAINING_EPOCHS
+from constants import HOUSES, HOUSE_COLUMN_NAME, LEARNING_RATE, MODEL_FILE, TRAINING_EPOCHS
 from database import Database
 from describe import mean, std
-from utils import label_width
 
 
 def selected_feature_names(database: Database) -> List[str]:
@@ -208,7 +208,8 @@ def train_binary_model(
     return weights, bias
 
 
-def train(database: Database) -> None:
+def train(database: Database) -> dict:
+    """Return the trained house models and their preprocessing values."""
     feature_names: List[str] = selected_feature_names(database)
     fill_values: Dict[str, float] = feature_fill_values(database, feature_names)
     x_train, y_train = training_data(database, feature_names, fill_values)
@@ -218,7 +219,7 @@ def train(database: Database) -> None:
         feature_names,
         normalization_values,
     )
-    feature_width = label_width(feature_names)
+    models: Dict[str, dict] = {}
     for house in HOUSES:
         y_binary = binary_labels(y_train, house)
         weights, bias = train_binary_model(
@@ -228,11 +229,24 @@ def train(database: Database) -> None:
             TRAINING_EPOCHS,
         )
 
-        print(f"Model: {house} versus other houses")
-        print(f"Bias: {bias:.6f}")
-        for feature_name, weight in zip(feature_names, weights):
-            print(f"  {feature_name:<{feature_width}} {weight:>10.6f}")
-        print()
+        models[house] = {
+            "bias": bias,
+            "weights": dict(zip(feature_names, weights)),
+        }
+
+    return {
+        "feature_names": feature_names,
+        "fill_values": fill_values,
+        "normalization_values": normalization_values,
+        "models": models,
+    }
+
+
+def save_model(model: dict, path: str) -> None:
+    """Save the trained models to a JSON file."""
+    with open(path, "w", encoding="utf-8") as file:
+        json.dump(model, file, indent=2, allow_nan=False)
+        file.write("\n")
 
 
 def main() -> int:
@@ -265,7 +279,12 @@ def main() -> int:
         print("logreg_train: no numeric features found", file=sys.stderr)
         return 1
 
-    train(database)
+    try:
+        model = train(database)
+        save_model(model, MODEL_FILE)
+    except (OSError, ValueError) as error:
+        print(f"logreg_train: cannot save model: {error}", file=sys.stderr)
+        return 1
     return 0
 
 

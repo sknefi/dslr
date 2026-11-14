@@ -28,7 +28,7 @@ help:
 	@echo "  make histogram       - display one feature histogram"
 	@echo "  make scatter_plot    - display one simple scatter plot"
 	@echo "  make pair_plot       - display a simple pair plot"
-	@echo "  make logreg_train    - start logistic regression training"
+	@echo "  make logreg_train    - train house models and save model.json"
 	@echo "  make describe_test   - run the pandas reference describe"
 	@echo "  make display_db      - write database JSON to db.json"
 	@echo "  make clean           - remove Python cache files"
@@ -65,7 +65,7 @@ scatter_plot: venv
 pair_plot: venv
 	$(PYTHON) $(PAIR_PLOT) $(TRAIN_DATA)
 
-# Train logistic regression model.
+# Train and save the four house models.
 logreg_train: venv
 	$(PYTHON) $(LOGREG_TRAIN) $(TRAIN_DATA)
 
