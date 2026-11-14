@@ -32,6 +32,17 @@ def validate_inputs(database: Database, model: dict) -> None:
     if not isinstance(models, dict) or set(models) != set(HOUSES):
         raise ValueError("model must contain all four houses")
 
+    fill_values = model.get("fill_values")
+    normalization_values = model.get("normalization_values")
+    if not isinstance(fill_values, dict) or not isinstance(normalization_values, dict):
+        raise ValueError("model has no preprocessing values")
+    for name in feature_names:
+        stats = normalization_values.get(name)
+        if name not in fill_values or not isinstance(stats, dict):
+            raise ValueError(f"model has no preprocessing values for {name}")
+        if "mean" not in stats or "std" not in stats or stats["std"] == 0:
+            raise ValueError(f"model has invalid normalization values for {name}")
+
     for name in [INDEX_COLUMN] + feature_names:
         if not database.has_column(name):
             raise ValueError(f"missing column in dataset: {name}")
