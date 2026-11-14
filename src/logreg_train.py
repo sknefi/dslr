@@ -193,16 +193,16 @@ def train_binary_model(
 
         for features, target in zip(x_train, y_binary):
             score = bias
-            for index, value in enumerate(features):
-                score += weights[index] * value
+            for i, value in enumerate(features):
+                score += weights[i] * value
             error = sigmoid(score) - target
 
-            for index, value in enumerate(features):
-                weight_gradients[index] += error * value
+            for i, value in enumerate(features):
+                weight_gradients[i] += error * value
             bias_gradient += error
 
-        for index in range(len(weights)):
-            weights[index] -= learning_rate * weight_gradients[index] / student_count
+        for i in range(len(weights)):
+            weights[i] -= learning_rate * weight_gradients[i] / student_count
         bias -= learning_rate * bias_gradient / student_count
 
     return weights, bias
