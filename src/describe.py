@@ -63,7 +63,7 @@ def max(numeric_values: List[float]) -> float:
 
 
 def describe(database: Database) -> None:
-    numeric_column_names: List[str] = database.numeric_columns()
+    numeric_column_names: List[str] = database.numeric_columns_except_index()
     features: List[dict] = []
 
     for column_name in numeric_column_names:
