@@ -15,6 +15,24 @@ def selected_feature_names(database: Database) -> List[str]:
     return database.numeric_columns_except_index()
 
 
+def validate_training_data(database: Database) -> None:
+    """Check that the dataset has all houses and numeric features."""
+    if not database.has_column(HOUSE_COLUMN_NAME):
+        raise ValueError(f"missing column: {HOUSE_COLUMN_NAME}")
+
+    present_houses = set(database.column(HOUSE_COLUMN_NAME)) - {""}
+    expected_houses = set(HOUSES)
+    missing_houses = expected_houses - present_houses
+    unknown_houses = present_houses - expected_houses
+    if missing_houses:
+        raise ValueError(f"missing houses: {', '.join(sorted(missing_houses))}")
+    if unknown_houses:
+        raise ValueError(f"unknown houses: {', '.join(sorted(unknown_houses))}")
+
+    if len(selected_feature_names(database)) == 0:
+        raise ValueError("no numeric features found")
+
+
 def feature_fill_values(database: Database, feature_names: List[str]) -> Dict[str, float]:
     """
     Return the average value for every selected feature.
@@ -262,27 +280,9 @@ def main() -> int:
 
     try:
         database = Database(sys.argv[1])
+        validate_training_data(database)
     except ValueError as error:
         print(f"logreg_train: {error}", file=sys.stderr)
-        return 1
-
-    if not database.has_column(HOUSE_COLUMN_NAME):
-        print(f"logreg_train: missing column: {HOUSE_COLUMN_NAME}", file=sys.stderr)
-        return 1
-
-    present_houses = set(database.column(HOUSE_COLUMN_NAME)) - {""}
-    expected_houses = set(HOUSES)
-    missing_houses = expected_houses - present_houses
-    unknown_houses = present_houses - expected_houses
-    if missing_houses:
-        print(f"logreg_train: missing houses: {', '.join(sorted(missing_houses))}", file=sys.stderr)
-        return 1
-    if unknown_houses:
-        print(f"logreg_train: unknown houses: {', '.join(sorted(unknown_houses))}", file=sys.stderr)
-        return 1
-
-    if len(selected_feature_names(database)) == 0:
-        print("logreg_train: no numeric features found", file=sys.stderr)
         return 1
 
     try:
