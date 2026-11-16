@@ -2,6 +2,7 @@
 
 import json
 import sys
+from datetime import datetime, timezone
 from math import exp
 from pathlib import Path
 from typing import Dict, List
@@ -231,8 +232,22 @@ def train_binary_model(
     return weights, bias
 
 
+def training_metadata(
+    started_at: str, training_samples: int, feature_count: int
+) -> dict:
+    """Return basic information about this training run."""
+    return {
+        "training_started_at": started_at,
+        "training_samples": training_samples,
+        "feature_count": feature_count,
+        "learning_rate": LEARNING_RATE,
+        "epochs": TRAINING_EPOCHS,
+    }
+
+
 def train(database: Database) -> dict:
-    """Return the trained house models and their preprocessing values."""
+    """Return the trained house models, preprocessing values, and metadata."""
+    training_started_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
     feature_names: List[str] = selected_feature_names(database)
     fill_values: Dict[str, float] = feature_fill_values(database, feature_names)
     x_train, y_train = training_data(database, feature_names, fill_values)
@@ -258,6 +273,9 @@ def train(database: Database) -> dict:
         }
 
     return {
+        "metadata": training_metadata(
+            training_started_at, len(x_train), len(feature_names)
+        ),
         "feature_names": feature_names,
         "fill_values": fill_values,
         "normalization_values": normalization_values,
