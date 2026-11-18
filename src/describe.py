@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from asyncio import BoundedSemaphore
 import sys
 from typing import List
 from math import sqrt
@@ -117,7 +118,8 @@ def main() -> int:
         print(f"describe: {error}", file=sys.stderr)
         return 1
 
-    describe(database, bonus=len(sys.argv) == 3)
+    bonus = len(sys.argv) == 3 and sys.argv[2] == "--bonus"
+    describe(database, bonus)
     return 0
 
 
