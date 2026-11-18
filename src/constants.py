@@ -33,7 +33,7 @@ HOUSE_COLORS = {
 # Logistic regression training settings.
 LEARNING_RATE = 0.1
 TRAINING_EPOCHS = 1000
-MODEL_FILE = "output/model.json"
+MODEL_FILE = "output/model_batch.json"
 PREDICTIONS_FILE = "output/houses.csv"
 
 # SGD updates after each student, so it uses separate training settings.

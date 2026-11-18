@@ -142,7 +142,7 @@ def save_predictions(
 def main() -> int:
     if len(sys.argv) not in (3, 4):
         print(
-            f"Usage: {sys.argv[0]} dataset_test.csv model.json [houses.csv]",
+            f"Usage: {sys.argv[0]} dataset_test.csv model_batch.json [houses.csv]",
             file=sys.stderr,
         )
         return 1

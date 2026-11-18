@@ -11,7 +11,7 @@ SCATTER_PLOT ?= src/scatter_plot.py
 PAIR_PLOT ?= src/pair_plot.py
 LOGREG_TRAIN ?= src/logreg_train.py
 LOGREG_PREDICT ?= src/logreg_predict.py
-MODEL_FILE ?= output/model.json
+MODEL_FILE ?= output/model_batch.json
 SGD_MODEL_FILE ?= output/model_sgd.json
 SGD_PREDICTIONS_FILE ?= output/houses_sgd.csv
 
@@ -31,7 +31,7 @@ help:
 	@echo "  make histogram       - display one feature histogram"
 	@echo "  make scatter_plot    - display one simple scatter plot"
 	@echo "  make pair_plot       - display a simple pair plot"
-	@echo "  make logreg_train    - train house models and save output/model.json"
+	@echo "  make logreg_train    - train house models and save output/model_batch.json"
 	@echo "  make logreg_predict  - save predicted houses to output/houses.csv"
 	@echo "  make logreg_train_sgd   - train with SGD and save output/model_sgd.json"
 	@echo "  make logreg_predict_sgd - save SGD predictions to output/houses_sgd.csv"
