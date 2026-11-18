@@ -35,3 +35,9 @@ LEARNING_RATE = 0.1
 TRAINING_EPOCHS = 1000
 MODEL_FILE = "output/model.json"
 PREDICTIONS_FILE = "output/houses.csv"
+
+# SGD updates after each student, so it uses separate training settings.
+SGD_LEARNING_RATE = 0.01
+SGD_TRAINING_EPOCHS = 100
+SGD_SHUFFLE_SEED = 42
+SGD_MODEL_FILE = "output/model_sgd.json"

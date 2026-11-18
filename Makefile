@@ -12,8 +12,10 @@ PAIR_PLOT ?= src/pair_plot.py
 LOGREG_TRAIN ?= src/logreg_train.py
 LOGREG_PREDICT ?= src/logreg_predict.py
 MODEL_FILE ?= output/model.json
+SGD_MODEL_FILE ?= output/model_sgd.json
+SGD_PREDICTIONS_FILE ?= output/houses_sgd.csv
 
-.PHONY: all help venv install describe describe_bonus histogram scatter_plot pair_plot logreg_train logreg_predict clean fclean re
+.PHONY: all help venv install describe describe_bonus histogram scatter_plot pair_plot logreg_train logreg_predict logreg_train_sgd logreg_predict_sgd clean fclean re
 
 # Run the first mandatory program.
 all: describe
@@ -31,6 +33,8 @@ help:
 	@echo "  make pair_plot       - display a simple pair plot"
 	@echo "  make logreg_train    - train house models and save output/model.json"
 	@echo "  make logreg_predict  - save predicted houses to output/houses.csv"
+	@echo "  make logreg_train_sgd   - train with SGD and save output/model_sgd.json"
+	@echo "  make logreg_predict_sgd - save SGD predictions to output/houses_sgd.csv"
 	@echo "  make clean           - remove Python cache files"
 	@echo "  make fclean          - clean and remove the virtual environment"
 	@echo "  make re              - rebuild the environment, then run all"
@@ -76,6 +80,13 @@ logreg_train: venv
 # Score test students with the saved house models.
 logreg_predict: venv
 	$(PYTHON) $(LOGREG_PREDICT) $(TEST_DATA) $(MODEL_FILE)
+
+# Train and predict with stochastic gradient descent without replacing mandatory outputs.
+logreg_train_sgd: venv
+	$(PYTHON) $(LOGREG_TRAIN) $(TRAIN_DATA) --optimizer sgd
+
+logreg_predict_sgd: venv
+	$(PYTHON) $(LOGREG_PREDICT) $(TEST_DATA) $(SGD_MODEL_FILE) $(SGD_PREDICTIONS_FILE)
 
 # Remove Python cache files.
 clean:

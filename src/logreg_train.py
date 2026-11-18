@@ -3,13 +3,17 @@
 import json
 import sys
 from datetime import datetime, timezone
-from math import exp
 from pathlib import Path
-from typing import Dict, List
+from typing import Callable, Dict, List
 
-from constants import HOUSES, HOUSE_COLUMN_NAME, LEARNING_RATE, MODEL_FILE, TRAINING_EPOCHS
+from constants import (
+    HOUSES, HOUSE_COLUMN_NAME, LEARNING_RATE, MODEL_FILE, SGD_LEARNING_RATE,
+    SGD_MODEL_FILE, SGD_SHUFFLE_SEED, SGD_TRAINING_EPOCHS, TRAINING_EPOCHS,
+)
 from database import Database
 from describe import mean, std
+from optimizers.batch import train_binary_model
+from optimizers.sgd import train_binary_model_sgd
 
 
 def selected_feature_names(database: Database) -> List[str]:
@@ -188,65 +192,51 @@ def binary_labels(y_train: List[str], house: str) -> List[int]:
     return [1 if label == house else 0 for label in y_train]
 
 
-def sigmoid(value: float) -> float:
-    """Turn a model score into a probability between 0 and 1."""
-    if value >= 0:
-        return 1.0 / (1.0 + exp(-value))
-    positive_exp = exp(value)
-    return positive_exp / (1.0 + positive_exp)
-
-
-def train_binary_model(
-    x_train: List[List[float]],
-    y_binary: List[int],
+def training_metadata(
+    started_at: str,
+    training_samples: int,
+    feature_count: int,
+    optimizer: str,
     learning_rate: float,
     epochs: int,
-) -> tuple[List[float], float]:
-    """Train one house-versus-rest model; return its weights and bias."""
-    weights: List[float] = [0.0] * len(x_train[0])
-    bias                 = 0.0
-    student_count        = len(x_train)
-
-    for _ in range(epochs):
-        # Collect gradients from every student before updating the weights.
-        weight_gradients: List[float] = [0.0] * len(weights)
-        bias_gradient = 0.0
-
-        # Pair each student's features with their correct 0/1 label.
-        for features, target in zip(x_train, y_binary):
-            score = bias
-            for i, value in enumerate(features):
-                score += weights[i] * value
-            error = sigmoid(score) - target
-
-            # Weight gradients use error * feature; bias uses error * 1.
-            for i, value in enumerate(features):
-                weight_gradients[i] += error * value
-            bias_gradient += error
-
-        # Update each weight using the average gradient for this epoch.
-        for i in range(len(weights)):
-            weights[i] -= learning_rate * weight_gradients[i] / student_count
-        bias -= learning_rate * bias_gradient / student_count
-
-    return weights, bias
-
-
-def training_metadata(
-    started_at: str, training_samples: int, feature_count: int
 ) -> dict:
     """Return basic information about this training run."""
-    return {
+    metadata = {
         "training_started_at": started_at,
         "training_samples": training_samples,
         "feature_count": feature_count,
-        "learning_rate": LEARNING_RATE,
-        "epochs": TRAINING_EPOCHS,
+        "optimizer": optimizer,
+        "learning_rate": learning_rate,
+        "epochs": epochs,
     }
+    if optimizer == "sgd":
+        metadata["shuffle_seed"] = SGD_SHUFFLE_SEED
+    return metadata
 
 
-def train(database: Database) -> dict:
+def optimizer_settings(
+    optimizer: str,
+) -> tuple[Callable[..., tuple[List[float], float]], float, int]:
+    """Return the training function, learning rate, and epoch count."""
+    if optimizer == "sgd":
+        return train_binary_model_sgd, SGD_LEARNING_RATE, SGD_TRAINING_EPOCHS
+    if optimizer == "batch":
+        return train_binary_model, LEARNING_RATE, TRAINING_EPOCHS
+    raise ValueError(f"unknown optimizer: {optimizer}")
+
+
+def model_path_for_optimizer(optimizer: str) -> str:
+    """Return the output model path for the selected optimizer."""
+    if optimizer == "sgd":
+        return SGD_MODEL_FILE
+    if optimizer == "batch":
+        return MODEL_FILE
+    raise ValueError(f"unknown optimizer: {optimizer}")
+
+
+def train(database: Database, optimizer: str = "batch") -> dict:
     """Return the trained house models, preprocessing values, and metadata."""
+    train_binary, learning_rate, epochs = optimizer_settings(optimizer)
     training_started_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
     feature_names: List[str] = selected_feature_names(database)
     fill_values: Dict[str, float] = feature_fill_values(database, feature_names)
@@ -260,11 +250,11 @@ def train(database: Database) -> dict:
     models: Dict[str, dict] = {}
     for house in HOUSES:
         y_binary = binary_labels(y_train, house)
-        weights, bias = train_binary_model(
+        weights, bias = train_binary(
             x_train_normalized,
             y_binary,
-            LEARNING_RATE,
-            TRAINING_EPOCHS,
+            learning_rate,
+            epochs,
         )
 
         models[house] = {
@@ -274,7 +264,12 @@ def train(database: Database) -> dict:
 
     return {
         "metadata": training_metadata(
-            training_started_at, len(x_train), len(feature_names)
+            training_started_at,
+            len(x_train),
+            len(feature_names),
+            optimizer,
+            learning_rate,
+            epochs,
         ),
         "feature_names": feature_names,
         "fill_values": fill_values,
@@ -292,8 +287,12 @@ def save_model(model: dict, path: str) -> None:
 
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} dataset.csv", file=sys.stderr)
+    if len(sys.argv) == 2:
+        optimizer = "batch"
+    elif len(sys.argv) == 4 and sys.argv[2:] == ["--optimizer", "sgd"]:
+        optimizer = "sgd"
+    else:
+        print(f"Usage: {sys.argv[0]} dataset.csv [--optimizer sgd]", file=sys.stderr)
         return 1
 
     try:
@@ -304,8 +303,9 @@ def main() -> int:
         return 1
 
     try:
-        model = train(database)
-        save_model(model, MODEL_FILE)
+        model = train(database, optimizer)
+        model_path = model_path_for_optimizer(optimizer)
+        save_model(model, model_path)
     except (OSError, ValueError) as error:
         print(f"logreg_train: cannot save model: {error}", file=sys.stderr)
         return 1

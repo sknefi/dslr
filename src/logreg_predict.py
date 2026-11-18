@@ -8,7 +8,7 @@ from typing import Dict, List
 
 from constants import HOUSE_COLUMN_NAME, HOUSES, INDEX_COLUMN, PREDICTIONS_FILE
 from database import Database
-from logreg_train import sigmoid
+from utils import sigmoid
 
 
 def load_model(path: str) -> dict:
@@ -140,17 +140,21 @@ def save_predictions(
 
 
 def main() -> int:
-    if len(sys.argv) != 3:
-        print(f"Usage: {sys.argv[0]} dataset_test.csv output/model.json", file=sys.stderr)
+    if len(sys.argv) not in (3, 4):
+        print(
+            f"Usage: {sys.argv[0]} dataset_test.csv model.json [houses.csv]",
+            file=sys.stderr,
+        )
         return 1
 
+    output_path = sys.argv[3] if len(sys.argv) == 4 else PREDICTIONS_FILE
     try:
         database = Database(sys.argv[1])
         model = load_model(sys.argv[2])
         validate_inputs(database, model)
         students = prepare_prediction_data(database, model)
         predictions = predict_students(students, model)
-        save_predictions(predictions, PREDICTIONS_FILE)
+        save_predictions(predictions, output_path)
     except (ValueError, OSError) as error:
         print(f"logreg_predict: {error}", file=sys.stderr)
         return 1

@@ -1,3 +1,4 @@
+from math import exp
 from typing import List
 
 from constants import COLUMN_PRINT_PADDING
@@ -22,3 +23,11 @@ def feature_width(feature, stat_names: List[str]) -> int:
         if value_width > width:
             width = value_width
     return width + COLUMN_PRINT_PADDING
+
+
+def sigmoid(value: float) -> float:
+    """Turn a model score into a probability between 0 and 1."""
+    if value >= 0:
+        return 1.0 / (1.0 + exp(-value))
+    positive_exp = exp(value)
+    return positive_exp / (1.0 + positive_exp)
