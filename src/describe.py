@@ -62,14 +62,14 @@ def max(numeric_values: List[float]) -> float:
     return max_val
 
 
-def describe(database: Database) -> None:
+def describe(database: Database, bonus: bool = False) -> None:
     numeric_column_names: List[str] = database.numeric_columns_except_index()
     features: List[dict] = []
 
     for column_name in numeric_column_names:
         numeric_values = database.numeric_column(column_name)
         sorted_numeric_values = sorted(numeric_values)
-        features.append({
+        feature = {
             "name": column_name,
             "Count": count(numeric_values),
             "Mean": mean(numeric_values),
@@ -79,9 +79,17 @@ def describe(database: Database) -> None:
             "50%": median(sorted_numeric_values),
             "75%": q3(sorted_numeric_values),
             "Max": max(numeric_values),
-        })
+        }
+        if bonus:
+            feature["Missing"] = float(database.missing_count(column_name))
+            feature["Range"] = feature["Max"] - feature["Min"]
+            feature["IQR"] = feature["75%"] - feature["25%"]
+            feature["Variance"] = feature["Std"] ** 2
+        features.append(feature)
 
     stat_names = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
+    if bonus:
+        stat_names += ["Missing", "Range", "IQR", "Variance"]
     stat_label_width = label_width(stat_names)
     feature_widths: List[int] = []
     for feature in features:
@@ -99,8 +107,8 @@ def describe(database: Database) -> None:
         print()
 
 def main() -> int:
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} dataset.csv", file=sys.stderr)
+    if len(sys.argv) not in (2, 3) or (len(sys.argv) == 3 and sys.argv[2] != "--bonus"):
+        print(f"Usage: {sys.argv[0]} dataset.csv [--bonus]", file=sys.stderr)
         return 1
 
     try:
@@ -109,7 +117,7 @@ def main() -> int:
         print(f"describe: {error}", file=sys.stderr)
         return 1
 
-    describe(database)
+    describe(database, bonus=len(sys.argv) == 3)
     return 0
 
 

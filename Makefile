@@ -16,7 +16,7 @@ DESCRIBE_TEST ?= debug/describe_pandas.py
 DISPLAY_DB ?= debug/display_db.py
 DB_JSON ?= db.json
 
-.PHONY: all help venv install describe histogram scatter_plot pair_plot logreg_train logreg_predict describe_test display_db clean fclean re
+.PHONY: all help venv install describe describe_bonus histogram scatter_plot pair_plot logreg_train logreg_predict describe_test display_db clean fclean re
 
 # Run the first mandatory program.
 all: describe
@@ -28,6 +28,7 @@ help:
 	@echo "  make venv            - create the local Python virtual environment"
 	@echo "  make install         - install Python dependencies if requirements.txt exists"
 	@echo "  make describe        - run the current describe implementation"
+	@echo "  make describe_bonus  - show describe statistics with bonus fields"
 	@echo "  make histogram       - display one feature histogram"
 	@echo "  make scatter_plot    - display one simple scatter plot"
 	@echo "  make pair_plot       - display a simple pair plot"
@@ -56,6 +57,10 @@ install: venv
 # First mandatory program, built slowly.
 describe: venv
 	$(PYTHON) $(DESCRIBE) $(TRAIN_DATA)
+
+# Add bonus statistics without changing the mandatory output.
+describe_bonus: venv
+	$(PYTHON) $(DESCRIBE) $(TRAIN_DATA) --bonus
 
 # Display one feature histogram.
 histogram: venv
