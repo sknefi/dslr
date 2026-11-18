@@ -12,11 +12,8 @@ PAIR_PLOT ?= src/pair_plot.py
 LOGREG_TRAIN ?= src/logreg_train.py
 LOGREG_PREDICT ?= src/logreg_predict.py
 MODEL_FILE ?= output/model.json
-DESCRIBE_TEST ?= debug/describe_pandas.py
-DISPLAY_DB ?= debug/display_db.py
-DB_JSON ?= db.json
 
-.PHONY: all help venv install describe describe_bonus histogram scatter_plot pair_plot logreg_train logreg_predict describe_test display_db clean fclean re
+.PHONY: all help venv install describe describe_bonus histogram scatter_plot pair_plot logreg_train logreg_predict clean fclean re
 
 # Run the first mandatory program.
 all: describe
@@ -34,8 +31,6 @@ help:
 	@echo "  make pair_plot       - display a simple pair plot"
 	@echo "  make logreg_train    - train house models and save output/model.json"
 	@echo "  make logreg_predict  - save predicted houses to output/houses.csv"
-	@echo "  make describe_test   - run the pandas reference describe"
-	@echo "  make display_db      - write database JSON to db.json"
 	@echo "  make clean           - remove Python cache files"
 	@echo "  make fclean          - clean and remove the virtual environment"
 	@echo "  make re              - rebuild the environment, then run all"
@@ -81,14 +76,6 @@ logreg_train: venv
 # Score test students with the saved house models.
 logreg_predict: venv
 	$(PYTHON) $(LOGREG_PREDICT) $(TEST_DATA) $(MODEL_FILE)
-
-# Pandas reference output for comparison only.
-describe_pandas: venv
-	$(PYTHON) $(DESCRIBE_TEST) $(TRAIN_DATA)
-
-# Debug helper: write parsed database as JSON.
-display_db: venv
-	PYTHONPATH=src $(PYTHON) $(DISPLAY_DB) $(TRAIN_DATA) > $(DB_JSON)
 
 # Remove Python cache files.
 clean:

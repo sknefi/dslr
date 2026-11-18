@@ -8,9 +8,5 @@ __pycache__/
 .venv/
 venv/
 
-# Local debug output scratch files
-debug/output_*
-debug/db.json
-
 # Generated model and predictions
 output/
