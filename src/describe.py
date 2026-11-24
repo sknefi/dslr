@@ -19,12 +19,15 @@ def mean(numeric_values: List[float]) -> float:
         sum_val += x
     return float(sum_val / count(numeric_values))
 
-def std(numeric_values: List[float]) -> float:
+def variance(numeric_values: List[float]) -> float:
     mean_val: float = mean(numeric_values)
     sum_diff: float = 0
     for x in numeric_values:
         sum_diff += (x - mean_val) ** 2
-    return sqrt(sum_diff / (count(numeric_values) - 1))
+    return sum_diff / (count(numeric_values) - 1)
+
+def std(numeric_values: List[float]) -> float:
+    return sqrt(variance(numeric_values))
 
 def min(numeric_values: List[float]) -> float:
     min_val: float = numeric_values[0]
@@ -55,12 +58,18 @@ def median(sorted_numeric_values: List[float]) -> float:
 def q3(sorted_numeric_values: List[float]) -> float:
     return percentile(sorted_numeric_values, 0.75)
 
+def iqr(sorted_numeric_values: List[float]) -> float:
+    return q3(sorted_numeric_values) - q1(sorted_numeric_values)
+
 def max(numeric_values: List[float]) -> float:
     max_val: float = numeric_values[0]
     for x in numeric_values:
         if x > max_val:
             max_val = x
     return max_val
+
+def value_range(numeric_values: List[float]) -> float:
+    return max(numeric_values) - min(numeric_values)
 
 
 def describe(database: Database, bonus: bool = False) -> None:
@@ -83,9 +92,9 @@ def describe(database: Database, bonus: bool = False) -> None:
         }
         if bonus:
             feature["Missing"] = float(database.missing_count(column_name))
-            feature["Range"] = feature["Max"] - feature["Min"]
-            feature["IQR"] = feature["75%"] - feature["25%"]
-            feature["Variance"] = feature["Std"] ** 2
+            feature["Range"] = value_range(numeric_values)
+            feature["IQR"] = iqr(sorted_numeric_values)
+            feature["Variance"] = variance(numeric_values)
         features.append(feature)
 
     stat_names = ["Count", "Mean", "Std", "Min", "25%", "50%", "75%", "Max"]
